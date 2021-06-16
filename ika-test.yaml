@@ -1,0 +1,103 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ika-test
+  labels:
+    ika.lll.fish/service: test
+    lll.fish/app: ikameshi
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      ika.lll.fish/service: test
+  template:
+    metadata:
+      labels:
+        ika.lll.fish/service: test
+        lll.fish/app: ikameshi
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: a0.node.local.lll.fish
+      volumes:
+        - name: syncdata
+          persistentVolumeClaim:
+            claimName: sync-pvc-test
+        - name: cf
+          secret:
+            secretName: rslsync-config
+            items:
+            -
+              key: ika-test.sync.keys
+              path: sync.conf
+      containers:
+        - name: test
+          ports:
+            - name: test-port
+              protocol: TCP
+              containerPort: 25565
+
+          image: tmswar/jvm-and:latest
+          args: ["/bin/bash", "-c", "sleep 30; chmod +x /sync/_launch.bash; /sync/_launch.bash"]
+          env:
+            - name: JVM_NUM
+              value: "2G"
+            - name: RCON_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: minecraft
+                  key: ika-rcon
+          resources:
+            requests:
+              memory: "4500Mi"
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: syncdata
+              mountPath: /sync
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/bash", "-c", "/usr/bin/env; /rcon-cli --password ${RCON_PASS} stop; sleep 10; kill -s 2 1;"]
+
+        - name: sync
+          image: ghcr.io/linuxserver/resilio-sync
+          env:
+            - name: PGID
+              value: "1000"
+            - name: PUID
+              value: "1000"
+            - name: TZ
+              value: Asia/Tokyo
+          resources: {}
+          volumeMounts:
+            - name: cf
+              mountPath: /config/sync.conf
+              subPath: sync.conf
+            - name: syncdata
+              mountPath: /sync
+          imagePullPolicy: Always
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/sh", "-c", "sleep 20;"]
+      terminationGracePeriodSeconds: 25
+  minReadySeconds: 20
+status: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ika-test
+  labels:
+    ika.lll.fish/service: test
+    lll.fish/app: ikameshi
+spec:
+  selector:
+    ika.lll.fish/service: test
+    lll.fish/app: ikameshi
+  clusterIP: None
+  ports:
+    - name: test
+      port: 25565
+      targetPort: test-port
+      protocol: TCP

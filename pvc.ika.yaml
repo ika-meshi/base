@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: sync-pvc-spigot
+  namespace: default
+  labels:
+    ika.lll.fish/service: spigot
+    lll.fish/app: ikameshi
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 25Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: sync-pvc-proxy
+  labels:
+    ika.lll.fish/service: proxy
+    lll.fish/app: ikameshi
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: sync-pvc-lobby
+  labels:
+    ika.lll.fish/service: lobby
+    lll.fish/app: ikameshi
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: sync-pvc-test
+  labels:
+    ika.lll.fish/service: test
+    lll.fish/app: ikameshi
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi

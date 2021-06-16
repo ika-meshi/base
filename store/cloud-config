@@ -1,0 +1,21 @@
+#cloud-config
+timezone: Asia/Tokyo
+disable_root: True
+
+runcmd:
+  - echo -e @reboot\ /usr/sbin/ip\ a\ add\ 10.10.0.{51..69}/16\ dev\ enp0s3\\n | sed -e 's>^ >>' | crontab
+  - yum update -y
+  - yum install traceroute -y
+  - dnf install oraclelinux-developer-release-el8 -y
+  - dnf config-manager --disable ol8_developer -y
+  - dnf config-manager --enable ol8_developer_UEKR6 -y
+  - dnf config-manager --save --setopt=ol8_developer_UEKR6.includepkgs='wireguard-tools*' -y
+  - dnf install wireguard-tools -y
+  - modprobe wireguard
+  - systemctl stop firewalld
+  - systemctl disable firewalld
+  - reboot
+
+nameservers:
+  addresses: [1.1.1.2,1.0.0.2]
+

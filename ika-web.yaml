@@ -1,0 +1,117 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ika-dynmap
+  namespace: default
+  labels:
+    ika.lll.fish/service: dynmap
+    lll.fish/app: ikameshi
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      ika.lll.fish/service: dynmap
+      lll.fish/app: ikameshi
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        ika.lll.fish/service: dynmap
+        lll.fish/app: ikameshi
+    spec:
+      nodeSelector:
+        ram: "24"
+      volumes:
+        - name: syncdata
+          emptyDir: {}
+        - name: cf
+          secret:
+            secretName: rslsync-config
+            items:
+            - key: ika-spigot.sync.keys
+              path: sync.conf
+
+        - name: minecraft-cf
+          configMap:
+            name: minecraft-config
+            items:
+            - key: ika-nginx-block.conf
+              path: default.conf
+            - key: nginx.conf
+              path: nginx.conf
+            - key: php.ini
+              path: php.ini
+      containers:
+        - name: nginx
+          ports:
+          - name: nginx-port
+            protocol: TCP
+            containerPort: 80
+          - name: nginx-port-udp
+            protocol: UDP
+            containerPort: 80
+          resources: {}
+          image: ghcr.io/tms-war/nginx-and:latest
+          volumeMounts:
+            - name: syncdata
+              mountPath: /usr/share/nginx/html/
+            - name: minecraft-cf
+              mountPath: /etc/nginx/conf.d/default.conf
+              subPath: default.conf
+            - name: minecraft-cf
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+          imagePullPolicy: Always
+        - name: fpm
+          image: php:fpm-alpine
+          resources: {}
+          volumeMounts:
+            - name: syncdata
+              mountPath: /var/www/html/
+            - name: minecraft-cf
+              mountPath: /opt/bitnami/php/etc/php-fpm.conf
+              subPath: php.ini
+          imagePullPolicy: Always
+
+        - name: sync
+          image: ghcr.io/linuxserver/resilio-sync
+          env:
+            - name: PGID
+              value: "1000"
+            - name: PUID
+              value: "1000"
+            - name: TZ
+              value: Asia/Tokyo
+          resources: {}
+          volumeMounts:
+            - name: cf
+              mountPath: /config/sync.conf
+              subPath: sync.conf
+            - name: syncdata
+              mountPath: /sync/plugins/dynmap/web/
+          imagePullPolicy: Always
+status: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ika-dynmap
+  labels:
+    ika.lll.fish/service: dynmap
+    lll.fish/app: ikameshi
+spec:
+  selector:
+    ika.lll.fish/service: dynmap
+    lll.fish/app: ikameshi
+  clusterIP: None
+  ports:
+    - name: ika-dynmap
+      port: 80
+      targetPort: nginx-port
+      protocol: TCP
+    - name: ika-dynmap-udp
+      port: 80
+      targetPort: nginx-port
+      protocol: UDP
