@@ -64,7 +64,7 @@ spec:
               subPath: nginx.conf
           imagePullPolicy: Always
         - name: fpm
-          image: php:fpm-alpine
+          image: php:7.4-fpm-alpine
           resources: {}
           volumeMounts:
             - name: syncdata
