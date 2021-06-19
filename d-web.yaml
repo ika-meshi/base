@@ -70,7 +70,7 @@ spec:
             - name: syncdata
               mountPath: /var/www/html/
             - name: minecraft-cf
-              mountPath: /opt/bitnami/php/etc/php-fpm.conf
+              mountPath: /usr/local/etc/php/php.ini
               subPath: php.ini
           imagePullPolicy: Always
 
