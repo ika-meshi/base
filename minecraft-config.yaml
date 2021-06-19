@@ -52,7 +52,7 @@ data:
 
 
       # /.syncの拒否
-      location ~ /\(.ht|.sync/|.git|conf/|bin/|inc/|vendor/) { deny all; }
+      location ~ /(\.ht|\.sync/|\.git|conf/|bin/|inc/|vendor/) { deny all; }
 
       # X-Accel-Redirect のサポート
       location ~ ^/data/ { internal; }
