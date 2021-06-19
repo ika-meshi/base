@@ -52,7 +52,7 @@ spec:
             protocol: UDP
             containerPort: 80
           resources: {}
-          image: ghcr.io/tms-war/nginx-and:latest
+          image: tmswar/nginx-and:latest
           volumeMounts:
             - name: syncdata
               mountPath: /usr/share/nginx/html/
