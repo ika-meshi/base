@@ -6,40 +6,85 @@ metadata:
 data:
   ika-nginx-block.conf: |-
     server {
-        listen 80 http2;
-        listen [::]:80 http2;
+      listen 80 http2;
+      listen [::]:80 http2;
 
-        server_tokens off;
-        root   /usr/share/nginx/html;
-        index index.php index.html index.htm;
+      server_tokens off;
+      root   /usr/share/nginx/html;
+      index index.php index.html index.htm;
 
-        
-        location ~ /\.ht {
-            deny all;
-        }
-        location ~ [^/]\.php(/|$) {
-            fastcgi_pass 127.0.0.1:9000;
 
-            fastcgi_split_path_info ^(.+\.php)(/.+)$;
-            if (!-f $document_root$fastcgi_script_name) {
-                return 404;
-            }
+      location ~ /\.ht {
+        deny all;
+      }
+      location ~ [^/]\.php(/|$) {
+        fastcgi_pass 127.0.0.1:9000;
 
-            fastcgi_index index.php;
-
-            include fastcgi.conf;
-            include fastcgi_params;
-
-            fastcgi_param SCRIPT_FILENAME /var/www/html/$fastcgi_script_name;
-            fastcgi_param PATH_INFO $fastcgi_path_info;
-            fastcgi_param PATH_TRANSLATED /var/www/html/$fastcgi_path_info;
-
-            include /etc/nginx/fastcgi_params;
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        if (!-f $document_root$fastcgi_script_name) {
+          return 404;
         }
 
-        # replace with the IP address of your resolver
-        resolver 127.0.0.1 ipv6=off valid=10s;
-        resolver_timeout 3s;
+        fastcgi_index index.php;
+
+        include fastcgi.conf;
+        include fastcgi_params;
+
+        fastcgi_param SCRIPT_FILENAME /var/www/html/$fastcgi_script_name;
+        fastcgi_param PATH_INFO $fastcgi_path_info;
+        fastcgi_param PATH_TRANSLATED /var/www/html/$fastcgi_path_info;
+
+        include /etc/nginx/fastcgi_params;
+      }
+
+      # replace with the IP address of your resolver
+      resolver 127.0.0.1 ipv6=off valid=10s;
+      resolver_timeout 3s;
+    }
+  ika-wiki-block.conf: |-
+    server {
+      listen 80 http2;
+      listen [::]:80 http2;
+
+      server_tokens off;
+      root  /usr/share/nginx/html;
+      index doku.php;
+
+
+      # /.syncの拒否
+      location ~ /\(.ht|.sync|.git|conf/|bin/|inc/|vendor/) { deny all; }
+
+      # X-Accel-Redirect のサポート
+      location ~ ^/data/ { internal; }
+
+      location @dokuwiki {
+        # dokuwiki設定ページでuserwrite設定を.htaccessにしている場合、URLの"doku.php/"を書き換えます
+        rewrite ^/_media/(.*) /lib/exe/fetch.php?media=$1 last;
+        rewrite ^/_detail/(.*) /lib/exe/detail.php?media=$1 last;
+        rewrite ^/_export/([^/]+)/(.*) /doku.php?do=export_$1&id=$2 last;
+        rewrite ^/(.*) /doku.php?id=$1&$args last;
+      }
+      location ~ [^/]\.php(/|$) {
+        fastcgi_pass 127.0.0.1:9000;
+
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        if (!-f $document_root$fastcgi_script_name) {
+          return 404;
+        }
+
+        fastcgi_index index.php;
+
+        include fastcgi.conf;
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME /var/www/html/$fastcgi_script_name;
+        fastcgi_param PATH_INFO $fastcgi_path_info;
+        fastcgi_param PATH_TRANSLATED /var/www/html/$fastcgi_path_info;
+        include /etc/nginx/fastcgi_params;
+      }
+
+      # replace with the IP address of your resolver
+      resolver 127.0.0.1 ipv6=off valid=10s;
+      resolver_timeout 3s;
     }
   nginx.conf: |-
     user abc;
@@ -49,39 +94,39 @@ data:
     worker_rlimit_nofile 100000;
 
     events {
-        worker_connections 1024;
-        accept_mutex_delay 100ms;
-        multi_accept on;
-        use epoll;
+      worker_connections 1024;
+      accept_mutex_delay 100ms;
+      multi_accept on;
+      use epoll;
     }
 
     http {
-        include /etc/nginx/mime.types;
-        default_type application/octet-stream;
+      include /etc/nginx/mime.types;
+      default_type application/octet-stream;
 
-        rewrite_log on;
+      rewrite_log on;
 
-        client_header_timeout 10;
-        client_body_timeout 10;
-        reset_timedout_connection on;
-        send_timeout 10;
-        limit_conn_zone $binary_remote_addr zone=addr:5m;
-        limit_conn addr 100;
-        charset UTF-8;
+      client_header_timeout 10;
+      client_body_timeout 10;
+      reset_timedout_connection on;
+      send_timeout 10;
+      limit_conn_zone $binary_remote_addr zone=addr:5m;
+      limit_conn addr 100;
+      charset UTF-8;
 
-        fastcgi_buffers 4 256k;
-        fastcgi_busy_buffers_size 256k;
-        fastcgi_temp_file_write_size 256k;
-        fastcgi_hide_header X-Powered-By;
+      fastcgi_buffers 4 256k;
+      fastcgi_busy_buffers_size 256k;
+      fastcgi_temp_file_write_size 256k;
+      fastcgi_hide_header X-Powered-By;
 
-        sendfile on;
-        open_file_cache max=100 inactive=20s;
-        tcp_nopush on;
-        tcp_nodelay on;
+      sendfile on;
+      open_file_cache max=100 inactive=20s;
+      tcp_nopush on;
+      tcp_nodelay on;
 
-        keepalive_timeout  15;
+      keepalive_timeout  15;
 
-        include /etc/nginx/conf.d/*.conf;
+      include /etc/nginx/conf.d/*.conf;
     }
   php.ini: |-
     memory_limit = 32M
