@@ -113,5 +113,5 @@ spec:
       protocol: TCP
     - name: ika-dynmap-udp
       port: 80
-      targetPort: nginx-port
+      targetPort: nginx-port-udp
       protocol: UDP
