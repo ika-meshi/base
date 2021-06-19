@@ -6,8 +6,8 @@ metadata:
 data:
   ika-nginx-block.conf: |-
     server {
-        listen 80;
-        listen [::]:80;
+        listen 80 http2;
+        listen [::]:80 http2;
 
         server_tokens off;
         root   /usr/share/nginx/html;
