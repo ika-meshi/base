@@ -52,10 +52,15 @@ data:
 
 
       # /.syncの拒否
-      location ~ /\(.ht|.sync|.git|conf/|bin/|inc/|vendor/) { deny all; }
+      location ~ /\(.ht|.sync/|.git|conf/|bin/|inc/|vendor/) { deny all; }
 
       # X-Accel-Redirect のサポート
       location ~ ^/data/ { internal; }
+
+      # キャッシュ
+      location ~ ^/lib.*\.(js|css|gif|png|ico|jpg|jpeg)$ {
+        expires 365d;
+      }
 
       location @dokuwiki {
         # dokuwiki設定ページでuserwrite設定を.htaccessにしている場合、URLの"doku.php/"を書き換えます
