@@ -84,22 +84,3 @@ spec:
       terminationGracePeriodSeconds: 25
   minReadySeconds: 20
 status: {}
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: ika-lobby
-  labels:
-    ika.lll.fish/service: lobby
-    lll.fish/app: ikameshi
-spec:
-  selector:
-    ika.lll.fish/service: lobby
-    lll.fish/app: ikameshi
-  clusterIP: None
-  ports:
-    - name: lobby
-      port: 25565
-      targetPort: lobby-port
-      protocol: TCP

@@ -81,28 +81,3 @@ spec:
   minReadySeconds: 15
   progressDeadlineSeconds: 100
 status: {}
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: ika-proxy
-  labels:
-    ika.lll.fish/service: proxy
-    lll.fish/app: ikameshi
-spec:
-  selector:
-    ika.lll.fish/service: proxy
-    lll.fish/app: ikameshi
-  type: NodePort
-  ports:
-    - name: ika-proxy
-      port: 25565
-      targetPort: proxy-port
-      nodePort: 30036
-      protocol: TCP
-    - name: ika-proxy-votifer
-      port: 8192
-      targetPort: votifer-port
-      nodePort: 30037
-      protocol: TCP

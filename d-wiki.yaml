@@ -94,29 +94,6 @@ spec:
 status: {}
 
 ---
-apiVersion: v1
-kind: Service
-metadata:
-  name: ika-wiki
-  labels:
-    ika.lll.fish/service: wiki
-    lll.fish/app: ikameshi
-spec:
-  selector:
-    ika.lll.fish/service: wiki
-    lll.fish/app: ikameshi
-  clusterIP: None
-  ports:
-    - name: ika-wiki
-      port: 80
-      targetPort: nginx-port
-      protocol: TCP
-    - name: ika-wiki-udp
-      port: 80
-      targetPort: nginx-port-udp
-      protocol: UDP
-
----
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:

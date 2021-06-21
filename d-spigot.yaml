@@ -86,24 +86,6 @@ spec:
 status: {}
 
 ---
-apiVersion: v1
-kind: Service
-metadata:
-  name: ika-spigot
-  labels:
-    ika.lll.fish/service: spigot
-    lll.fish/app: ikameshi
-spec:
-  selector:
-    ika.lll.fish/service: spigot
-    lll.fish/app: ikameshi
-  clusterIP: None
-  ports:
-    - name: ika-dynmap
-      port: 8123
-      targetPort: dynmap-port
-
----
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:

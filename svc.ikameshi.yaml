@@ -1,0 +1,126 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ika-spigot
+  labels:
+    ika.lll.fish/service: spigot
+    lll.fish/app: ikameshi
+spec:
+  selector:
+    ika.lll.fish/service: spigot
+    lll.fish/app: ikameshi
+  clusterIP: None
+  ports:
+    - name: ika-dynmap
+      port: 8123
+      targetPort: dynmap-port
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ika-proxy
+  labels:
+    ika.lll.fish/service: proxy
+    lll.fish/app: ikameshi
+spec:
+  selector:
+    ika.lll.fish/service: proxy
+    lll.fish/app: ikameshi
+  type: NodePort
+  ports:
+    - name: ika-proxy
+      port: 25565
+      targetPort: proxy-port
+      nodePort: 30036
+      protocol: TCP
+    - name: ika-proxy-votifer
+      port: 8192
+      targetPort: votifer-port
+      nodePort: 30037
+      protocol: TCP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ika-lobby
+  labels:
+    ika.lll.fish/service: lobby
+    lll.fish/app: ikameshi
+spec:
+  selector:
+    ika.lll.fish/service: lobby
+    lll.fish/app: ikameshi
+  clusterIP: None
+  ports:
+    - name: lobby
+      port: 25565
+      targetPort: lobby-port
+      protocol: TCP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ika-test
+  labels:
+    ika.lll.fish/service: test
+    lll.fish/app: ikameshi
+spec:
+  selector:
+    ika.lll.fish/service: test
+    lll.fish/app: ikameshi
+  clusterIP: None
+  ports:
+    - name: test
+      port: 25565
+      targetPort: test-port
+      protocol: TCP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ika-wiki
+  labels:
+    ika.lll.fish/service: wiki
+    lll.fish/app: ikameshi
+spec:
+  selector:
+    ika.lll.fish/service: wiki
+    lll.fish/app: ikameshi
+  clusterIP: None
+  ports:
+    - name: ika-wiki
+      port: 80
+      targetPort: nginx-port
+      protocol: TCP
+    - name: ika-wiki-udp
+      port: 80
+      targetPort: nginx-port-udp
+      protocol: UDP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ika-dynmap
+  labels:
+    ika.lll.fish/service: dynmap
+    lll.fish/app: ikameshi
+spec:
+  selector:
+    ika.lll.fish/service: dynmap
+    lll.fish/app: ikameshi
+  clusterIP: None
+  ports:
+    - name: ika-dynmap
+      port: 80
+      targetPort: nginx-port
+      protocol: TCP
+    - name: ika-dynmap-udp
+      port: 80
+      targetPort: nginx-port-udp
+      protocol: UDP
