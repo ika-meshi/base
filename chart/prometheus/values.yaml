@@ -1325,16 +1325,16 @@ serverFiles:
       # いかめし
       - job_name: 'mc-ika'
         static_configs:
-          - targets: [ 'localhost:9225' ]
+          - targets: [ 'ika-spigot:9225' ]
             labels:
               server_name: 'spigot'
-          - targets: [ 'localhost:9226' ]
+          - targets: [ 'ika-lobby:9225' ]
             labels:
               server_name: 'lobby'
-          - targets: [ 'localhost:9227' ]
+          - targets: [ 'ika-mod:9225' ]
             labels:
               server_name: 'mod'
-          - targets: [ 'localhost:9228' ]
+          - targets: [ 'ika-test:9225' ]
             labels:
               server_name: 'test'
 
