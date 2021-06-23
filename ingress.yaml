@@ -1,0 +1,38 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: wiki-non
+spec:
+  tls:
+    - secretName: tls-ingress
+  rules:
+    - host: ikameshi-wiki.lll.fish
+      http:
+        paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: ika-wiki
+              port:
+                number: 80
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dynmap-non
+spec:
+  tls:
+    - secretName: tls-ingress
+  rules:
+    - host: ikameshi.lll.fish
+      http:
+        paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: ika-spigot
+              port:
+                number: 8123

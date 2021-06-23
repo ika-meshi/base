@@ -84,23 +84,3 @@ spec:
   minReadySeconds: 30
   progressDeadlineSeconds: 200
 status: {}
-
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: dynmap-non
-spec:
-  tls:
-    - secretName: tls-ingress
-  rules:
-    - host: ikameshi.lll.fish
-      http:
-        paths:
-        - path: /
-          pathType: Prefix
-          backend:
-            service:
-              name: ika-spigot
-              port:
-                number: 8123
