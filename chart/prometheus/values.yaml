@@ -25,7 +25,19 @@ serviceAccounts:
   server:
     create: true
     name:
-    annotations: {}
+    annotations:
+      ad.datadoghq.com/prometheus-server.check_names: |
+                        ["openmetrics"]
+      ad.datadoghq.com/prometheus-server.init_configs: |
+                        [{}]
+      ad.datadoghq.com/prometheus-server.instances: |
+          [
+            {
+              "prometheus_url": "http://prometheus-server:9090/metrics ",
+              "namespace": "node-lllfish",
+                "metrics": [{"promhttp_metric_handler_requests_total": "prometheus.handler.requests.total"}]
+            }
+          ]
 
 alertmanager:
   ## If false, alertmanager will not be installed
