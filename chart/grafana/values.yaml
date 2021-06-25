@@ -419,6 +419,8 @@ grafana.ini:
     enabled: true
     org_name: Main Org.
     org_role: Viewer
+  dashboards:
+    min_refresh_interval: 1s
 ## grafana Authentication can be enabled with the following values on grafana.ini
  # server:
       # The full public facing url you use in browser, used for redirects and emails
