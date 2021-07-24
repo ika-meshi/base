@@ -17,7 +17,7 @@ spec:
         lll.fish/app: ikameshi
     spec:
       nodeSelector:
-        kubernetes.io/hostname: 00.node.local.lll.fish
+        kubernetes.io/hostname: a0.node.local.lll.fish
       volumes:
         - name: syncdata
           persistentVolumeClaim:
@@ -39,7 +39,9 @@ spec:
               containerPort: 8123
 
           image: tmswar/jvm-and:latest
-          args: ["/bin/bash", "-c", "sleep 5; chmod +x /sync/_launch.bash; /sync/_launch.bash"]
+          args: ["/bin/bash", "-c", "sleep 30; chmod +x /sync/_launch.bash; /sync/_launch.bash"]
+          tty: true
+          stdin: true
           env:
             - name: JVM_NUM
               value: "8G"

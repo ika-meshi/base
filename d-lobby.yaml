@@ -39,9 +39,11 @@ spec:
 
           image: tmswar/jvm-and:latest
           args: ["/bin/bash", "-c", "sleep 7; chmod +x /sync/_launch.bash; /sync/_launch.bash"]
+          tty: true
+          stdin: true
           env:
             - name: JVM_NUM
-              value: "4G"
+              value: "3G"
             - name: RCON_PASS
               valueFrom:
                 secretKeyRef:

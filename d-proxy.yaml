@@ -42,9 +42,11 @@ spec:
 
           image: tmswar/jvm-and:latest
           args: ["/bin/bash", "-c", "sleep 3; chmod +x /sync/_launch.bash; /sync/_launch.bash"]
+          tty: true
+          stdin: true
           env:
             - name: JVM_NUM
-              value: "3G"
+              value: "1G"
           imagePullPolicy: Always
           volumeMounts:
             - name: syncdata

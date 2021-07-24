@@ -17,7 +17,7 @@ spec:
         lll.fish/app: ikameshi
     spec:
       nodeSelector:
-        kubernetes.io/hostname: a0.node.local.lll.fish
+        kubernetes.io/hostname: 00.node.local.lll.fish
       volumes:
         - name: syncdata
           persistentVolumeClaim:
@@ -36,11 +36,13 @@ spec:
               protocol: TCP
               containerPort: 25565
 
-          image: tmswar/jvm-and:latest
+          image: tmswar/jvm-and8:latest
           args: ["/bin/bash", "-c", "sleep 30; chmod +x /sync/_launch.bash; /sync/_launch.bash"]
+          tty: true
+          stdin: true
           env:
             - name: JVM_NUM
-              value: "2G"
+              value: "5G"
             - name: RCON_PASS
               valueFrom:
                 secretKeyRef:
@@ -48,7 +50,7 @@ spec:
                   key: ika-rcon
           resources:
             requests:
-              memory: "4500Mi"
+              memory: "5500Mi"
           imagePullPolicy: Always
           volumeMounts:
             - name: syncdata
@@ -82,3 +84,23 @@ spec:
       terminationGracePeriodSeconds: 25
   minReadySeconds: 20
 status: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ika-test
+  labels:
+    ika.lll.fish/service: test
+    lll.fish/app: ikameshi
+spec:
+  selector:
+    ika.lll.fish/service: test
+    lll.fish/app: ikameshi
+  type: NodePort
+  ports:
+    - name: test
+      port: 25565
+      targetPort: test-port
+      nodePort: 30088
+      protocol: TCP
